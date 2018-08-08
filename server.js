@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
 const knex = require('knex');
+require('dotenv').load();
 
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
@@ -12,11 +13,12 @@ const image = require('./controllers/image');
 const db = knex({
   client: 'pg',
   connection: {
-    host : '127.0.0.1',
-    user : 'aneagoie',
-    password : '',
-    database : 'smart-brain'
-  }
+    host : process.env.REACT_APP_HOST,
+    user : process.env.REACT_APP_USERNAME,
+    password : process.env.REACT_APP_PASSWORD,
+    database : process.env.REACT_APP_DB_NAME
+  },
+    searchPath: [process.env.REACT_APP_SCHEMA_NAME, 'public'],
 });
 
 const app = express();

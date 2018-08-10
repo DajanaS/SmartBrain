@@ -11,28 +11,38 @@ const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 
 const db = knex({
-  client: 'pg',
-  connection: {
-    host : process.env.REACT_APP_HOST,
-    user : process.env.REACT_APP_USERNAME,
-    password : process.env.REACT_APP_PASSWORD,
-    database : process.env.REACT_APP_DB_NAME
-  },
+    client: 'pg',
+    connection: {
+        host: process.env.REACT_APP_HOST,
+        user: process.env.REACT_APP_USERNAME,
+        password: process.env.REACT_APP_PASSWORD,
+        database: process.env.REACT_APP_DB_NAME
+    },
     searchPath: [process.env.REACT_APP_SCHEMA_NAME, 'public'],
 });
 
 const app = express();
 
-app.use(cors())
+app.use(cors());
 app.use(bodyParser.json());
 
-app.get('/', (req, res)=> { res.send(database.users) })
+app.get('/', (req, res) => {
+    res.send(database.users)
+});
 app.post('/signin', signin.handleSignin(db, bcrypt))
-app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcrypt) })
-app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db)})
-app.put('/image', (req, res) => { image.handleImage(req, res, db)})
-app.post('/imageurl', (req, res) => { image.handleApiCall(req, res)})
+app.post('/register', (req, res) => {
+    register.handleRegister(req, res, db, bcrypt)
+});
+app.get('/profile/:id', (req, res) => {
+    profile.handleProfileGet(req, res, db)
+});
+app.put('/image', (req, res) => {
+    image.handleImage(req, res, db)
+});
+app.post('/imageurl', (req, res) => {
+    image.handleApiCall(req, res)
+});
 
-app.listen(3000, ()=> {
-  console.log('app is running on port 3000');
-})
+app.listen(3000, () => {
+    console.log('app is running on port 3000');
+});

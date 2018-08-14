@@ -10,16 +10,24 @@ const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 
-const db = knex({
-    client: 'pg',
-    connection: {
-        host: process.env.REACT_APP_HOST,
-        user: process.env.REACT_APP_USERNAME,
-        password: process.env.REACT_APP_PASSWORD,
-        database: process.env.REACT_APP_DB_NAME
-    },
-    searchPath: [process.env.REACT_APP_SCHEMA_NAME, 'public'],
-});
+let db;
+if (process.env.POSTGRES_URI) {
+    db = knex({
+        client: 'pg',
+        connection: process.env.POSTGRES_URI
+    });
+} else {
+    db = knex({
+        client: 'pg',
+        connection: {
+            host: process.env.POSTGRES_HOST,
+            user: process.env.POSTGRES_USERNAME,
+            password: process.env.POSTGRES_PASSWORD,
+            database: process.env.POSTGRES_DB_NAME
+        },
+        searchPath: [process.env.POSTGRES_SCHEMA_NAME, 'public'],
+    });
+}
 
 const app = express();
 
@@ -29,7 +37,7 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
     res.send(database.users)
 });
-app.post('/signin', signin.handleSignin(db, bcrypt))
+app.post('/signin', signin.handleSignin(db, bcrypt));
 app.post('/register', (req, res) => {
     register.handleRegister(req, res, db, bcrypt)
 });

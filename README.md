@@ -4,8 +4,9 @@ Final project for Udemy course
 ## Set up the project
 1. Clone this repository
 2. Run `npm install`
-3. Run `npm start`
-4. Set up the environment variables
+3. Set up the environment variables
+4. Run `npm start`
+5. [Optionally] Use Docker instead manually starting the app
 
 ### How to set up the environment variables
 Copy the file [.env.sample](./.env.sample) in the same path location, renaming it into `.env` and give the variables
@@ -14,10 +15,15 @@ postgres database is set up on *localhost* (or can be written as *127.0.0.1*), w
 Additionally, the database name is *postgres* and the schema name is *smart_brain* (usually these two are not divided).
 Few notes:
 1. If you don't need to specify the schema name in order to connect to the postgres database, then you can:
-    - remove the line ` searchPath: [process.env.REACT_APP_SCHEMA_NAME, 'public'],` in [server.js](./server.js#L21) file;
-    - remove the environment variable `REACT_APP_SCHEMA_NAME` and instead write the schema/database name directly in
-`REACT_APP_DB_NAME` variable.
-2. You can define your own environment variables, but keep in mind that they should start with the prefix `REACT_APP`.
-3. You can grab a free Clarifai API key [here](https://www.clarifai.com/) in order to connect to the Clarifai API,
-just by creating an account (it is like this in the moment when this is written).
-4. Make sure you use PostgreSQL instead of MYSQL for this code base.
+    - remove the line ` searchPath: [process.env.POSTGRES_SCHEMA_NAME, 'public'],` in [server.js](./server.js#L28) file;
+    - remove the environment variable `POSTGRES_SCHEMA_NAME` and instead write the schema/database name directly in
+`POSTGRES_DB_NAME` variable.
+2. You can grab a free Clarifai API key [here](https://www.clarifai.com/)
+(at least it is free at the moment when this is written) in order to connect to the Clarifai API, just by creating an account.
+3. Make sure you use PostgreSQL for this code base (not MYSQL).
+
+### Using Docker Compose
+1. Run Docker
+2. Open console and go to the root of this project
+3. Make sure that no services are up (to avoid conflicts): `docker-compose down`
+4. With a single command run all the services: `docker-compose up --build`

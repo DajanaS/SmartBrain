@@ -11,8 +11,6 @@ services:
     environment:
       POSTGRES_URI: postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB_NAME}
       CLARIFAI_API_KEY: ${CLARIFAI_API_KEY}
-    links:
-      - postgres
     ports:
       - "3000:3000"
     volumes:

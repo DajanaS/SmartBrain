@@ -5,7 +5,7 @@ Final project for Udemy course
 1. Clone this repository
 2. Run `npm install`
 3. Set up the environment variables
-4. Run `npm start`
+4. Run `npm start` OR:
 5. [Optionally] Use Docker instead manually starting the app
 
 ### How to set up the environment variables
@@ -26,4 +26,9 @@ Few notes:
 1. Run Docker
 2. Open console and go to the root of this project
 3. Make sure that no services are up (to avoid conflicts): `docker-compose down`
+or `docker stop <container-name>` to stop a specific service which is running in the background
 4. With a single command run all the services: `docker-compose up --build`
+5. How to access each service separately:
+    - backend's bash: `docker-compose exec smart-brain-api bash`
+    - postgres (adjust port number if needed): `psql postgres://<username>:<password>@localhost:5432/<database_name>`
+    - redis: `docker-compose exec redis redis-cli`

@@ -47,6 +47,27 @@ class App extends Component {
         this.state = initialState;
     }
 
+    // Also can use: getDerivedStateFromProps
+    componentDidMount() {
+        const token = window.sessionStorage.getItem("token");
+        if (token) {
+            fetch("http://localhost:3000/signin", {
+                method: "post",
+                headers: {
+                    "Content_Type": "application/json",
+                    "Authorization": token //TODO: standard is to set: "Bearer " + token
+                }
+            })
+                .then(resp => resp.json())
+                .then(data => {
+                    if (data && data.id) {
+                        console.log("success, get user profile"); //TODO: get user profile
+                    }
+                })
+                .catch(console.log);
+        }
+    }
+
     loadUser = (data) => {
         this.setState({
             user: {

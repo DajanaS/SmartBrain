@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 const checkCredentials = (db, bcrypt, req, res) => {
     const {email, password} = req.body;
     if (!email || !password) {
@@ -23,12 +25,29 @@ const getAuthTokenId = () => {
     console.log("auth ok");
 };
 
+const signToken = (email) => {
+    const jwtPayload = {email}; // data to be included in the JWT
+    return jwt.sign(jwtPayload, 'JWT_SECRET', {expiresIn: '2 days'}); //TODO: Add environment variable for this!
+};
+
+const createSessions = (user) => {
+    // JWT token, return user data
+    const {email, id} = user;
+    const token = signToken(email);
+    return {success: 'true', userId: id, token};
+};
+
 const signinAuthentication = (db, bcrypt) => (req, res) => {
     // check if the authorization header is set by the client
     const {authorization} = req.headers;
     return authorization ? getAuthTokenId() :
         checkCredentials(db, bcrypt, req, res)
-            .then(data => res.json(data)) // data <==> user
+            .then(data => { // data <==> user
+                return data.id && data.email ?
+                    createSessions(data)
+                    : Promise.reject(data); // good for debugging, not good to send data from DB to client
+            })
+            .then(session => res.json(session))
             .catch(err => res.status(400).json(err));
 };
 

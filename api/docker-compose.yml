@@ -10,6 +10,7 @@ services:
     working_dir: /usr/src/smart-brain-api
     environment:
       POSTGRES_URI: postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB_NAME}
+      REDIS_URI: redis://redis:6379
       CLARIFAI_API_KEY: ${CLARIFAI_API_KEY}
     ports:
       - "3000:3000"
@@ -26,3 +27,9 @@ services:
           POSTGRES_HOST: postgres
     ports:
       - "5432:5432"
+
+  # Redis
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"

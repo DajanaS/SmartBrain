@@ -37,7 +37,7 @@ const signToken = (email) => {
 };
 
 const setToken = (key, value, redisClient) => { // key = token, value = userId
-    return Promise.resolve(redisClient.set(key, value));
+    return Promise.resolve(redisClient.set(key, value, 'EX', 60*60*2)); // expires in 2h
 };
 
 const createSession = (user, redisClient) => {

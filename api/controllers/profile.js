@@ -12,8 +12,7 @@ const handleProfileGet = (req, res, db) => {
 };
 
 const handleProfileUpdate = (req, res, db) => {
-    //TODO: Check if params exist
-    const {id} = req.params;
+    const {id} = req.params; // can be checked in exists
     const {name, age, pet} = req.body.formInput;
     db('users')
         .where({id}) // id: id

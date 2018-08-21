@@ -49,13 +49,13 @@ class App extends Component {
 
     // Also can use: getDerivedStateFromProps
     componentDidMount() {
-        const token = window.sessionStorage.getItem("token");
+        const token = window.sessionStorage.getItem('token');
         if (token) {
-            fetch("http://localhost:3000/signin", {
-                method: "post",
+            fetch('http://localhost:3000/signin', {
+                method: 'post',
                 headers: {
-                    "Content_Type": "application/json",
-                    "Authorization": token //TODO: standard is to set: "Bearer " + token (OAuth 2)
+                    'Content_Type': 'application/json',
+                    'Authorization': token // standard is to set: "Bearer " + token (OAuth 2)
                 }
             })
                 .then(resp => resp.json())
@@ -64,14 +64,14 @@ class App extends Component {
                         fetch(`http://localhost:3000/profile/${data.id}`, {
                             method: 'get',
                             headers: {
-                                "Content-Type": "application/json",
-                                "Authorization": token
+                                'Content-Type': 'application/json',
+                                'Authorization': token
                             }
                         }).then(resp => resp.json())
                             .then(user => {
                                 if (user && user.email) {
                                     this.loadUser(user);
-                                    this.onRouteChange("home");
+                                    this.onRouteChange('home');
                                 }
                             });
                     }
@@ -121,7 +121,10 @@ class App extends Component {
         this.setState({imageUrl: this.state.input});
         fetch('http://localhost:3000/imageurl', {
             method: 'post',
-            headers: {'Content-Type': 'application/json', 'Authorization': window.sessionStorage.getItem('token')},
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': window.sessionStorage.getItem('token')
+            },
             body: JSON.stringify({
                 input: this.state.input
             })
@@ -170,7 +173,7 @@ class App extends Component {
     render() {
         const {isSignedIn, imageUrl, route, boxes, isProfileOpen, user} = this.state;
         return (
-            <div className="App">
+            <div className='App'>
                 <Particles className='particles'
                            params={particlesOptions}
                 />

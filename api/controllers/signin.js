@@ -1,8 +1,4 @@
 const jwt = require('jsonwebtoken');
-const redis = require('redis');
-
-// set up Redis:
-const redisClient = redis.createClient(process.env.REDIS_URI);
 
 const checkCredentials = (db, bcrypt, req, res) => {
     const {email, password} = req.body;
@@ -25,7 +21,7 @@ const checkCredentials = (db, bcrypt, req, res) => {
         .catch(err => Promise.reject("Wrong credentials!"))
 };
 
-const getAuthTokenId = (req, res) => {
+const getAuthTokenId = (req, res, redisClient) => {
     const {authorization} = req.headers;
     return redisClient.get(authorization, (err, reply) => {
         if (err || !reply) {
@@ -40,29 +36,29 @@ const signToken = (email) => {
     return jwt.sign(jwtPayload, 'JWT_SECRET', {expiresIn: '2 days'}); //TODO: Add environment variable for this!
 };
 
-const setToken = (key, value) => { // key = token, value = userId
+const setToken = (key, value, redisClient) => { // key = token, value = userId
     return Promise.resolve(redisClient.set(key, value));
 };
 
-const createSessions = (user) => {
+const createSession = (user, redisClient) => {
     // JWT token, return user data
     const {email, id} = user;
     const token = signToken(email);
-    return setToken(token, id)
+    return setToken(token, id, redisClient)
         .then(() => {
             return {success: 'true', userId: id, token}
         })
         .catch(console.log);
 };
 
-const signinAuthentication = (db, bcrypt) => (req, res) => {
+const signinAuthentication = (db, bcrypt, redisClient) => (req, res) => {
     // check if the authorization header is set by the client
     const {authorization} = req.headers;
-    return authorization ? getAuthTokenId(req, res) :
+    return authorization ? getAuthTokenId(req, res, redisClient) :
         checkCredentials(db, bcrypt, req, res)
             .then(data => { // data <==> user
                 return data.id && data.email ?
-                    createSessions(data)
+                    createSession(data, redisClient)
                     : Promise.reject(data); // good for debugging, not good to send data from DB to client
             })
             .then(session => res.json(session))

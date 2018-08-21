@@ -1,3 +1,4 @@
+const redis = require('redis');
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
@@ -9,6 +10,16 @@ const register = require('./controllers/register');
 const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
+const auth = require('./middlewares/authorization');
+
+const app = express();
+
+app.listen(3000, () => {
+    console.log('app is running on port 3000');
+});
+
+
+/* Define databases */
 
 let db;
 if (process.env.POSTGRES_URI) {
@@ -29,31 +40,40 @@ if (process.env.POSTGRES_URI) {
     });
 }
 
-const app = express();
+const redisClient = redis.createClient(process.env.REDIS_URI);
+
+
+/* Define middlewares */
 
 app.use(cors());
+
 app.use(bodyParser.json());
+
+/*
+ Define endpoints */
 
 app.get('/', (req, res) => {
     res.send("Welcome!")
 });
-app.post('/signin', signin.signinAuthentication(db, bcrypt));
+
+app.post('/signin', signin.signinAuthentication(db, bcrypt, redisClient));
+
 app.post('/register', (req, res) => {
     register.handleRegister(req, res, db, bcrypt)
 });
-app.get('/profile/:id', (req, res) => {
+
+app.get('/profile/:id', auth.requireAuth, (req, res) => {
     profile.handleProfileGet(req, res, db)
 });
-app.post('/profile/:id', (req, res) => {
+
+app.post('/profile/:id', auth.requireAuth, (req, res) => {
     profile.handleProfileUpdate(req, res, db)
 });
-app.put('/image', (req, res) => {
+
+app.put('/image', auth.requireAuth, (req, res) => {
     image.handleImage(req, res, db)
 });
-app.post('/imageurl', (req, res) => {
-    image.handleApiCall(req, res)
-});
 
-app.listen(3000, () => {
-    console.log('app is running on port 3000');
+app.post('/imageurl', auth.requireAuth, (req, res) => {
+    image.handleApiCall(req, res)
 });

@@ -52,7 +52,7 @@ class App extends Component {
     componentDidMount() {
         const token = window.sessionStorage.getItem("token");
         if (token) {
-            request.signIn()
+            request.signInWithToken()
                 .then(data => {
                     if (data && data.id) {
                         request.getProfile(data.id)

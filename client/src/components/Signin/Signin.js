@@ -23,15 +23,7 @@ class Signin extends React.Component {
     };
 
     onSubmitSignIn = () => {
-        fetch("http://localhost:3000/signin", {
-            method: "post",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                email: this.state.signInEmail,
-                password: this.state.signInPassword
-            })
-        })
-            .then(response => response.json())
+        request.signInWithCredentials(this.state.signInEmail, this.state.signInPassword)
             .then(data => {
                 if (data.userId && data.success === "true") {
                     this.saveAuthTokenInSession(data.token);

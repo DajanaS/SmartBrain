@@ -26,6 +26,7 @@ Few notes:
 which has been added because of Docker, by default locally it is not needed (according to docs: [.createClient()](./server.js#L43) can be with empty parameter
 because by default *localhost* is set). So, the value of the environment variable in the `.env` file could be either empty
 or *redis://127.0.0.1:6379* (I haven't tested neither of them). Of course, this implies having Redis installed and running locally.
+5. The value of `JWT_SECRET` can be anything. This word is used for encrypting the JWT's content. The value should not be exposed to public.
 
 ### Using Docker Compose
 1. Start/Run Docker

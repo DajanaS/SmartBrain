@@ -24,16 +24,7 @@ class Register extends React.Component {
     };
 
     onSubmitRegister = () => {
-        fetch("http://localhost:3000/register", {
-            method: "post",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                email: this.state.email,
-                password: this.state.password,
-                name: this.state.name
-            })
-        })
-            .then(response => response.json())
+        request.register(this.state.email, this.state.password, this.state.name)
             .then(data => {
                 if (data.userId && data.success === "true") {
                     window.sessionStorage.setItem("token", data.token);

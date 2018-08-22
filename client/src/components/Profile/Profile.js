@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import './Profile.css';
+import * as request from '../../api/fetchRequests';
 
 class Profile extends Component {
     constructor(props) {
@@ -28,16 +29,13 @@ class Profile extends Component {
     };
 
     onProfileUpdate = (data) => {
-        fetch(`http://localhost:3000/profile/${this.props.user.id}`, {
-            method: 'post',
-            headers: {'Content-Type': 'application/json', 'Authorization': window.sessionStorage.getItem('token')},
-            body: JSON.stringify({formInput: data})
-        }).then(resp => {
-            if (resp.status === 200 || resp.status === 304) {
-                this.props.toggleModal();
-                this.props.loadUser({...this.props.user, ...data});
-            }
-        }).catch(console.log);
+        request.updateProfile(this.props.user.id, data)
+            .then(resp => {
+                if (resp.status === 200 || resp.status === 304) {
+                    this.props.toggleModal();
+                    this.props.loadUser({...this.props.user, ...data});
+                }
+            }).catch(console.log);
     };
 
     render() {

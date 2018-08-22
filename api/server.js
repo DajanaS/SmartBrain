@@ -76,3 +76,7 @@ app.put('/image', auth.requireAuth, (req, res) => {
 app.post('/imageurl', auth.requireAuth, (req, res) => {
     image.handleApiCall(req, res)
 });
+
+module.exports = {
+    redisClient: redisClient
+};

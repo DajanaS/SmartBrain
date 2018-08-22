@@ -1,4 +1,5 @@
 import React from 'react';
+import * as request from '../../api/fetchRequests';
 
 class Signin extends React.Component {
     constructor(props) {
@@ -22,9 +23,9 @@ class Signin extends React.Component {
     };
 
     onSubmitSignIn = () => {
-        fetch('http://localhost:3000/signin', {
-            method: 'post',
-            headers: {'Content-Type': 'application/json'},
+        fetch("http://localhost:3000/signin", {
+            method: "post",
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 email: this.state.signInEmail,
                 password: this.state.signInPassword
@@ -34,14 +35,7 @@ class Signin extends React.Component {
             .then(data => {
                 if (data.userId && data.success === "true") {
                     this.saveAuthTokenInSession(data.token);
-                    // It's good to have a single function between here and App.js that does the same!
-                    fetch(`http://localhost:3000/profile/${data.userId}`, {
-                        method: 'get',
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": data.token
-                        }
-                    }).then(resp => resp.json())
+                    request.getProfile(data.userId)
                         .then(user => {
                             if (user && user.email) {
                                 this.props.loadUser(user);
@@ -91,7 +85,7 @@ class Signin extends React.Component {
                             />
                         </div>
                         <div className="lh-copy mt3">
-                            <p onClick={() => onRouteChange('register')}
+                            <p onClick={() => onRouteChange("register")}
                                className="f6 link dim black db pointer">Register</p>
                         </div>
                     </div>

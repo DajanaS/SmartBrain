@@ -49,8 +49,7 @@ app.use(cors());
 
 app.use(bodyParser.json());
 
-/*
- Define endpoints */
+/* Define endpoints */
 
 app.get('/', (req, res) => {
     res.send("Welcome!")
@@ -59,7 +58,7 @@ app.get('/', (req, res) => {
 app.post('/signin', signin.signinAuthentication(db, bcrypt, redisClient));
 
 app.post('/register', (req, res) => {
-    register.handleRegister(req, res, db, bcrypt)
+    register.handleRegister(req, res, db, bcrypt, redisClient)
 });
 
 app.get('/profile/:id', auth.requireAuth, (req, res) => {

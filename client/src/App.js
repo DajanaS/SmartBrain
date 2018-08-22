@@ -9,6 +9,7 @@ import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import Rank from './components/Rank/Rank';
 import Modal from './components/Modal/Modal';
 import Profile from './components/Profile/Profile';
+import * as request from './api/fetchRequests';
 import './App.css';
 
 const particlesOptions = {
@@ -49,29 +50,16 @@ class App extends Component {
 
     // Also can use: getDerivedStateFromProps
     componentDidMount() {
-        const token = window.sessionStorage.getItem('token');
+        const token = window.sessionStorage.getItem("token");
         if (token) {
-            fetch('http://localhost:3000/signin', {
-                method: 'post',
-                headers: {
-                    'Content_Type': 'application/json',
-                    'Authorization': token // standard is to set: "Bearer " + token (OAuth 2)
-                }
-            })
-                .then(resp => resp.json())
+            request.signIn()
                 .then(data => {
                     if (data && data.id) {
-                        fetch(`http://localhost:3000/profile/${data.id}`, {
-                            method: 'get',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': token
-                            }
-                        }).then(resp => resp.json())
+                        request.getProfile(data.id)
                             .then(user => {
                                 if (user && user.email) {
                                     this.loadUser(user);
-                                    this.onRouteChange('home');
+                                    this.onRouteChange("home");
                                 }
                             });
                     }
@@ -96,7 +84,7 @@ class App extends Component {
         if (data && data.outputs) {
             return data.outputs[0].data.regions.map(face => {
                 const clarifaiFace = face.region_info.bounding_box;
-                const image = document.getElementById('inputimage');
+                const image = document.getElementById("inputimage");
                 const width = Number(image.width);
                 const height = Number(image.height);
                 return {
@@ -119,35 +107,14 @@ class App extends Component {
 
     onButtonSubmit = () => {
         this.setState({imageUrl: this.state.input});
-        fetch('http://localhost:3000/imageurl', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': window.sessionStorage.getItem('token')
-            },
-            body: JSON.stringify({
-                input: this.state.input
-            })
-        })
-            .then(response => response.json())
+        request.imageURL(this.state.input)
             .then(response => {
                 if (response) {
-                    fetch('http://localhost:3000/image', {
-                        method: 'put',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': window.sessionStorage.getItem('token')
-                        },
-                        body: JSON.stringify({
-                            id: this.state.user.id
-                        })
-                    })
-                        .then(response => response.json())
+                    request.getImage(this.state.user.id)
                         .then(count => {
                             this.setState(Object.assign(this.state.user, {entries: count}))
                         })
                         .catch(console.log)
-
                 }
                 this.displayFaceBoxes(this.calculateFaceLocations(response))
             })
@@ -155,10 +122,10 @@ class App extends Component {
     };
 
     onRouteChange = (route) => {
-        if (route === 'signout') {
-            window.sessionStorage.removeItem('token');
+        if (route === "signout") {
+            window.sessionStorage.removeItem("token");
             return this.setState(initialState)
-        } else if (route === 'home') {
+        } else if (route === "home") {
             this.setState({isSignedIn: true})
         }
         this.setState({route: route});
@@ -174,8 +141,8 @@ class App extends Component {
     render() {
         const {isSignedIn, imageUrl, route, boxes, isProfileOpen, user} = this.state;
         return (
-            <div className='App'>
-                <Particles className='particles'
+            <div className="App">
+                <Particles className="particles"
                            params={particlesOptions}
                 />
                 <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} toggleModal={this.toggleModal}/>
@@ -185,7 +152,7 @@ class App extends Component {
                              user={user}
                              loadUser={this.loadUser}/>
                 </Modal>}
-                {route === 'home'
+                {route === "home"
                     ? <div>
                         <Logo/>
                         <Rank
@@ -199,7 +166,7 @@ class App extends Component {
                         <FaceRecognition boxes={boxes} imageUrl={imageUrl}/>
                     </div>
                     : (
-                        route === 'signin'
+                        route === "signin"
                             ? <Signin loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
                             : <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
                     )
